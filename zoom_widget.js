@@ -27,14 +27,11 @@
 
     , cursorPos: function(event) {
       var x, y, e = event.originalEvent;
-      if (e.touches) {
-        y = e.touches[0].pageX;
-        y = e.touches[0].pageY;
-      } else {
-        x = e.pageX;
-        y = e.pageY;
-      }
-      return { x:y, y:y };
+      if (e.changedTouches) e = e.changedTouches[0];
+      return {
+          x: e.pageX
+        , y: e.pageY
+      };
     }
           
     , _create: function() {
@@ -102,27 +99,20 @@
       
       this.element.on("touchstart.zoomboard_swipe mousedown.zoomboard_swipe", function(event) {
         var is_moving = false;
-        var pos = self.cursorPos(event);
-        var startX, startY, e = event.originalEvent;
-        
         if (self.in_starting_position) {
-          startX = pos.x;
-          startY = pos.y;
           is_moving = true;
+          var start = self.cursorPos(event);
+                  
           var remove_event_handlers = function() {
             is_moving = false;
             self.element.off("touchmove.zb_swipe touchend.zb_swipe mousemove.zb_swipe mouseup.zb_swipe");
-            startX = startY = null;
           };
           
           self.element.on("touchmove.zb_swipe mousemove.zb_swipe", function(event) {
-            var endX, endY, e = event.originalEvent;
             if (is_moving === true) {
-              var pos = self.cursorPos(event);
-              endX = pos.x;
-              endY = pos.y;
-              
-              var dx = startX - endX; var dy = startY - endY;
+              var end = self.cursorPos(event);
+              var dx = start.x - end.x;
+              var dy = start.y - end.y;
               if (Math.abs(dx) >= self.option("min_swipe_x")) {
                 if (dx > 0) {
                   self.on_swipe("left");
@@ -283,7 +273,8 @@
 
       var do_zoom = $.proxy(function(x, y) {
         var zoomtouch_event = jQuery.Event("zb_zoom");
-        zoomtouch_event.x = x;zoomtouch_event.y = y;
+        zoomtouch_event.x = x; 
+        zoomtouch_event.y = y;
         this.element.trigger(zoomtouch_event);
 
         if (scale_factor * current_zoom > max_zoom) {
@@ -326,16 +317,17 @@
           this.just_gestured = false;
           return;
         }
-        var x, y, e = event.originalEvent;
-        if (e.touches) {
-//          if (e.touches.length > 0) return false;
+        if (event.originalEvent.touches) {
+          var pos = this.cursorPos(event);
           var offset = this.element.offset();
-          x = (e.changedTouches[0].pageX - offset.left) / current_zoom_x + this.viewport.x;
-          y = (e.changedTouches[0].pageY - offset.top) / current_zoom_y  + this.viewport.y;
+          x = pos.x - offset.left;
+          y = pos.y - offset.top;
         } else {
-          x = event.offsetX / current_zoom_x + this.viewport.x;
-          y = event.offsetY / current_zoom_y  + this.viewport.y;
+          x = event.offsetX;
+          y = event.offsetY;
         }
+        var x = x / current_zoom_x + this.viewport.x;
+        var y = y / current_zoom_y + this.viewport.y;
         do_zoom(x, y);
         this.reset_reset_timeout();
       }, this));
@@ -460,7 +452,7 @@
     , flashkey: function(key) {
       switch (key) {
         case specialKeys.DELETE:
-          this.flash("&#x232B;");
+          this.flash("&#9003;");
           break;
         case specialKeys.ENTER:
           this.flash("&#9252;");
