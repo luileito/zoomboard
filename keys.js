@@ -76,14 +76,14 @@ var raw_keys_sym = [
 var keys = [];
 
 for(var i = 0; i<raw_keys.length; i+=5) {
-	var key_info = {
-		x : raw_keys[i]
-		, y : raw_keys[i+1]
-		, width : raw_keys[i+2]
-		, height : raw_keys[i+3]
-		, key : raw_keys[i+4]
-	};
-	keys.push(key_info);
+  var key_info = {
+    x : raw_keys[i]
+    , y : raw_keys[i+1]
+    , width : raw_keys[i+2]
+    , height : raw_keys[i+3]
+    , key : raw_keys[i+4]
+  };
+  keys.push(key_info);
 }
 
 window.keys = keys;
@@ -91,14 +91,14 @@ window.keys = keys;
 var keys_sym = [];
 
 for(var i = 0; i<raw_keys_sym.length; i+=5) {
-	var key_info = {
-		x : raw_keys_sym[i]
-		, y : raw_keys_sym[i+1]
-		, width : raw_keys_sym[i+2]
-		, height : raw_keys_sym[i+3]
-		, key : raw_keys_sym[i+4]
-	};
-	keys_sym.push(key_info);
+  var key_info = {
+    x : raw_keys_sym[i]
+    , y : raw_keys_sym[i+1]
+    , width : raw_keys_sym[i+2]
+    , height : raw_keys_sym[i+3]
+    , key : raw_keys_sym[i+4]
+  };
+  keys_sym.push(key_info);
 }
 window.keys_sym = keys_sym;
 }());
