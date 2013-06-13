@@ -10,18 +10,27 @@
 
     options: {
       img_srcs: ["ZoomBoard3b.png", "symbols3b.png"]
+      // The key mappings are defined in keys.js
       , keymaps: [keys, keys_sym]
       , keyboard_names: ["ZB", "#"]
-      , zoom_factor: 2.2 
+      // A character is printed when scale_factor * current_zoom > max_zoom
+      , zoom_factor: 2.2
+      // This is the initial scale of the keyboard layout
       , original_scale: 0.12
+      // If max_zoom > 1 then the original image will be oversampled
       , max_zoom: 1.0
       , reset_on_max_zoom: true
+      // This is in ms
       , reset_timeout: 1000
+      // This is in px
       , center_bias: 0.05
+      // This is in seconds
       , anim_time: 0.1
+      // These are in px
       , min_swipe_x: 40
       , min_swipe_y: 30
       , max_key_error_distance: 2
+      // This allows a regular keyboard to be used in desktop browsers
       , use_real_keyboard: true
     }
 
@@ -157,9 +166,6 @@
           } else if (event.keyCode === 40) { //down
             self.on_swipe("down");
           } else {
-//            if (!self.is_printable(event)) {
-//              return false;
-//            }
             var zoomkey_event = jQuery.Event("zb_key");
             zoomkey_event.key = String.fromCharCode(event.keyCode).toLowerCase();
             if (event.keyCode === 8) {
@@ -170,8 +176,10 @@
               zoomkey_event.key = specialKeys.ENTER;
             }
             zoomkey_event.entry_type = "keyboard_press";
-            self.element.trigger(zoomkey_event);
             self.flashkey(zoomkey_event.key);
+            if (self.is_printable(event) || [8, 13].indexOf(event.keyCode) > -1) {
+              self.element.trigger(zoomkey_event);
+            }
           }
         });
       }
@@ -278,7 +286,7 @@
         this.element.trigger(zoomtouch_event);
 
         if (scale_factor * current_zoom > max_zoom) {
-          var key = this.get_key_for_point({x:x, y:y})
+          var key = this.get_key_for_point({x:x, y:y});
           if (key !== null) {
             var zoomkey_event = jQuery.Event("zb_key");
             zoomkey_event.key = key.key;
@@ -452,10 +460,10 @@
     , flashkey: function(key) {
       switch (key) {
         case specialKeys.DELETE:
-          this.flash("&#9003;");
+          this.flash("&#8656;");
           break;
         case specialKeys.ENTER:
-          this.flash("&#9252;");
+          this.flash("&#8629;");
           break;
         case specialKeys.SPACE:
           this.flash("&#9251;");
