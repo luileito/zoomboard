@@ -1,42 +1,50 @@
 <html>
-	<head>
-		<link type="text/css" href="jquery-ui-1.8.16.custom/css/ui-lightness/jquery-ui-1.8.16.custom.css" rel="stylesheet" />	
-		<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-		<script type="text/javascript" src="underscore-min.js"></script>
-		<script type="text/javascript" src="jquery-2.0.2.min.js"></script>
-		<script type="text/javascript" src="jquery-ui-1.8.16.custom/js/jquery-ui-1.8.16.custom.min.js"></script>
-		<script type="text/javascript" src="keys.js"></script>
-		<script type="text/javascript" src="zoom_widget.js"></script>
-		<script type="text/javascript">
-			$(function() {
-				$("div.container").zoomboard({
-					original_scale: 0.15
-				}).on("zb_key", function(event) {
-					var key = event.key;
-					var typed_div = $("div.typed");
-					if(key === "delete") {
-						typed_div.contents().last().remove();
-					} else {
-						typed_div.append(key);
-					}
-				});
-			});
-		</script>
-		<style type="text/css">
-			div.typed {
-				font-size: 48pt;
-				font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-				font-weight: 100;
-				height: 80px;
-				scroll: auto;
-			}
-			:focus {
-				outline: none;
-			}
-		</style>
-	</head>
-	<body>
-		<div class="typed"></div>
-		<div class="container"></div>
-	</body>
+  <head>
+    <link type="text/css" href="jquery-ui-1.8.16.custom/css/ui-lightness/jquery-ui-1.8.16.custom.css" rel="stylesheet" />  
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script type="text/javascript" src="underscore-min.js"></script>
+    <script type="text/javascript" src="jquery-2.0.2.min.js"></script>
+    <script type="text/javascript" src="jquery-ui-1.8.16.custom/js/jquery-ui-1.8.16.custom.min.js"></script>
+    <script type="text/javascript" src="keys.js"></script>
+    <script type="text/javascript" src="zoom_widget.js"></script>
+    <script type="text/javascript">
+      $(function() {
+        $("div.container").zoomboard({
+          original_scale: 0.15
+        }).on("zb_key", function(event) {
+          var key = event.key;
+          var typed_div = $("div.typed");
+          var specialKeys = $(this).data("zoomboard").specialKeys;
+          switch (key) {
+            case specialKeys.ENTER:
+              alert("You typed: '" + typed_div.text() + "'");
+              typed_div.html("");
+              break;
+            case specialKeys.DELETE:
+              typed_div.contents().last().remove();
+              break;
+            default:
+              typed_div.append(key);
+              break;
+          }
+        });
+      });
+    </script>
+    <style type="text/css">
+      div.typed {
+        font-size: 48pt;
+        font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+        font-weight: 100;
+        height: 80px;
+        scroll: auto;
+      }
+      :focus {
+        outline: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="typed"></div>
+    <div class="container"></div>
+  </body>
 </html>

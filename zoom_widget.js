@@ -1,11 +1,5 @@
 (function(global, undefined) {
 
-  var specialKeys = {
-    ENTER: "enter"
-    , DELETE: "delete"
-    , SPACE: " "
-  };
-  
   var zb = {
 
     options: {
@@ -17,11 +11,11 @@
       , zoom_factor: 2.2
       // This is the initial scale of the keyboard layout
       , original_scale: 0.12
-      // If max_zoom > 1 then the original image will be oversampled
+      // If max_zoom > 1 then the original image will be oversampled while zooming
       , max_zoom: 1.0
       , reset_on_max_zoom: true
-      // This is in ms
-      , reset_timeout: 1000
+      // This is in seconds
+      , reset_zoom_timeout: 1
       // This is in px
       , center_bias: 0.05
       // This is in seconds
@@ -34,6 +28,13 @@
       , use_real_keyboard: true
     }
 
+    // This is what will be printed onscreen on pressing these keys
+    , specialKeys: {
+      ENTER: ""
+      , DELETE: "delete"
+      , SPACE: " "
+    }
+  
     , cursorPos: function(event) {
       var x, y, e = event.originalEvent;
       if (e.changedTouches) e = e.changedTouches[0];
@@ -45,8 +46,11 @@
           
     , _create: function() {
       var self = this;
-      
       $.Widget.prototype._create.call(this);
+      
+      // Make this property publicly accessible for the UI
+      this.specialKeys = self.specialKeys;
+      
       this.original_position = {
         x: 0, y: 0, width: 0, height: 0
       };
@@ -171,9 +175,9 @@
             if (event.keyCode === 8) {
               event.returnValue = false;
               event.cancelBubble = true;
-              zoomkey_event.key = specialKeys.DELETE;
+              zoomkey_event.key = self.specialKeys.DELETE;
             } else if (event.keyCode === 13) { //return
-              zoomkey_event.key = specialKeys.ENTER;
+              zoomkey_event.key = self.specialKeys.ENTER;
             }
             zoomkey_event.entry_type = "keyboard_press";
             self.flashkey(zoomkey_event.key);
@@ -239,13 +243,13 @@
 
       if (direction === "left") {
         var zoomkey_event = jQuery.Event("zb_key");
-        zoomkey_event.key = specialKeys.DELETE;
+        zoomkey_event.key = this.specialKeys.DELETE;
         zoomkey_event.entry_type = "swipe";
         this.element.trigger(zoomkey_event);
         this.flashkey(zoomkey_event.key);
       } else if (direction === "right") {
         var zoomkey_event = jQuery.Event("zb_key");
-        zoomkey_event.key = specialKeys.SPACE;
+        zoomkey_event.key = this.specialKeys.SPACE;
         zoomkey_event.entry_type = "swipe";
         this.element.trigger(zoomkey_event);
         this.flashkey(zoomkey_event.key);
@@ -440,8 +444,8 @@
     
     , reset_reset_timeout: function() {
       this.clear_reset_timeout();
-      var reset_timeout = this.option("reset_timeout");
-      this.reset_timeout = window.setTimeout(_.bind(this.reset, this), reset_timeout);
+      var zoom_timeout = this.option("reset_zoom_timeout") * 1000;
+      this.reset_timeout = window.setTimeout(_.bind(this.reset, this), zoom_timeout);
     }
     
     , flash: function(text, duration, color) {
@@ -459,13 +463,13 @@
     
     , flashkey: function(key) {
       switch (key) {
-        case specialKeys.DELETE:
+        case this.specialKeys.DELETE:
           this.flash("&#8656;");
           break;
-        case specialKeys.ENTER:
+        case this.specialKeys.ENTER:
           this.flash("&#8629;");
           break;
-        case specialKeys.SPACE:
+        case this.specialKeys.SPACE:
           this.flash("&#9251;");
           break;
         default:
